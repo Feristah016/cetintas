@@ -1,0 +1,51 @@
+<cfif NOT structKeyExists(session, "mudurID")>
+    <cflocation url="mudur_giris.cfm">
+</cfif>
+
+<cfquery name="calisanlar" datasource="database.sql">
+    SELECT * FROM calisanlar
+</cfquery>
+
+<table border="1">
+    <tr>
+        <th>Ad</th>
+        <th>Soyad</th>
+        <th>Yaş</th>
+        <th>Birim</th>
+        <th>Maaş</th>
+    </tr>
+    <cfoutput query="calisanlar">
+        <tr>
+            <td>#ad#</td>
+            <td>#soyad#</td>
+            <td>#yas#</td>
+            <td>#birim#</td>
+            <td>#maas#</td>
+        </tr>
+    </cfoutput>
+</table>
+
+<button onclick="document.getElementById('istatistikModal').style.display='block'">İstatistikleri Göster</button>
+
+<div id="istatistikModal" style="display:none;">
+    <form method="post" action="mudur_panel.cfm">
+        <input type="submit" name="hesapla" value="Hesapla">
+    </form>
+</div>
+
+<cfif structKeyExists(form, "hesapla")>
+    <cfquery name="istatistik" datasource="YourDataSource">
+        SELECT COUNT(*) AS toplamCalisan,
+               AVG(yas) AS yasOrtalamasi,
+               SUM(maas) AS toplamMaas,
+               AVG(maas) AS ortalamaMaas
+        FROM calisanlar
+    </cfquery>
+
+    <cfoutput>
+        <p>Toplam Çalışan Sayısı: #istatistik.toplamCalisan#</p>
+        <p>Çalışanların Yaş Ortalaması: #numberFormat(istatistik.yasOrtalamasi, "0.00")#</p>
+        <p>Çalışanların Toplam Maaş Miktarı: #numberFormat(istatistik.toplamMaas, "0.00")#</p>
+        <p>Çalışanların Ortalama Maaş Miktarı: #numberFormat(istatistik.ortalamaMaas, "0.00")#</p>
+    </cfoutput>
+</cfif>
